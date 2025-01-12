@@ -15,12 +15,21 @@ EXPECTED_OUTPUT_DIR = "expected_output"
 EXECUTABLE_EXTENSION = ".exe" if os.name == "nt" else ""  # Windows or Linux/Mac
 
 # Test configuration for the vector_add program
-TEST_CONFIG = {
-    "name": "VectorAdd",
-    "source_file": "vector_add.cu",
-    "executable_name": "vector_add" + EXECUTABLE_EXTENSION,
-    "expected_output_file": "vector_add_output.txt",
-}
+# Updated Test Configurations
+TEST_CONFIGS = [
+    {
+        "name": "VectorAdd",
+        "source_file": "vector_add.cu",
+        "executable_name": "vector_add" + EXECUTABLE_EXTENSION,
+        "expected_output_file": "vector_add_output.txt",
+    },
+    {
+        "name": "MatrixMul",
+        "source_file": "matrix_mul.cu",
+        "executable_name": "matrix_mul" + EXECUTABLE_EXTENSION,
+        "expected_output_file": "matrix_mul_output.txt",
+    }
+]
 
 def compile_cuda_program(source_file, output_binary):
     """Compiles a CUDA program using nvcc."""
@@ -51,32 +60,32 @@ def compare_output(actual_output, expected_output_file):
         expected_output = f.read().strip()
 
     return actual_output == expected_output
-
 def main():
-    """Main function to run the test."""
-    print("\n=== Running Test: VectorAdd ===\n")
-    
-    # Paths
-    source_file = os.path.join(CUDA_KERNELS_DIR, TEST_CONFIG["source_file"])
-    executable_path = os.path.join(".", TEST_CONFIG["executable_name"])
-    expected_output_path = os.path.join(EXPECTED_OUTPUT_DIR, TEST_CONFIG["expected_output_file"])
+    """Main function to run all tests."""
+    for test_config in TEST_CONFIGS:
+        print(f"\n=== Running Test: {test_config['name']} ===\n")
 
-    # 1. Compile the CUDA program
-    if not compile_cuda_program(source_file, executable_path):
-        print("[FAIL] Compilation Error")
-        return
+        # Paths
+        source_file = os.path.join(CUDA_KERNELS_DIR, test_config["source_file"])
+        executable_path = os.path.join(".", test_config["executable_name"])
+        expected_output_path = os.path.join(EXPECTED_OUTPUT_DIR, test_config["expected_output_file"])
 
-    # 2. Run the compiled executable
-    actual_output = run_executable(executable_path)
-    if actual_output is None:
-        print("[FAIL] Runtime Error")
-        return
+        # 1. Compile the CUDA program
+        if not compile_cuda_program(source_file, executable_path):
+            print(f"[FAIL] {test_config['name']}: Compilation Error")
+            continue
 
-    # 3. Compare the output to the expected output
-    if compare_output(actual_output, expected_output_path):
-        print("[PASS] Output matches expected results.")
-    else:
-        print("[FAIL] Output does not match expected results.")
+        # 2. Run the compiled executable
+        actual_output = run_executable(executable_path)
+        if actual_output is None:
+            print(f"[FAIL] {test_config['name']}: Runtime Error")
+            continue
+
+        # 3. Compare the output to the expected output
+        if compare_output(actual_output, expected_output_path):
+            print(f"[PASS] {test_config['name']}: Output matches expected results.")
+        else:
+            print(f"[FAIL] {test_config['name']}: Output does not match expected results.")
 
 if __name__ == "__main__":
     main()
