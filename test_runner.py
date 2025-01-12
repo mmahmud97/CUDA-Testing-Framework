@@ -16,6 +16,7 @@ EXECUTABLE_EXTENSION = ".exe" if os.name == "nt" else ""  # Windows or Linux/Mac
 
 # Test configuration for the vector_add program
 # Updated Test Configurations
+# Updated Test Configurations
 TEST_CONFIGS = [
     {
         "name": "VectorAdd",
@@ -28,6 +29,12 @@ TEST_CONFIGS = [
         "source_file": "matrix_mul.cu",
         "executable_name": "matrix_mul" + EXECUTABLE_EXTENSION,
         "expected_output_file": "matrix_mul_output.txt",
+    },
+    {
+        "name": "ComplexKernel",
+        "source_file": "complex_kernel.cu",
+        "executable_name": "complex_kernel" + EXECUTABLE_EXTENSION,
+        "expected_output_file": "complex_kernel_output.txt",
     }
 ]
 
